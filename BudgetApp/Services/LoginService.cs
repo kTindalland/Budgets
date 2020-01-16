@@ -12,36 +12,17 @@ namespace BudgetApp.Services
     {
         private readonly BudgetContext _context;
         private readonly ICryptographicService _crypto;
+        private readonly ICredentialHoldingService _creds;
 
-        public LoginService(BudgetContext context, ICryptographicService crypto)
+        public LoginService(BudgetContext context, ICryptographicService crypto, ICredentialHoldingService creds)
         {
             _context = context;
             _crypto = crypto;
+            _creds = creds;
         }
 
         public bool AuthenticateLogin(string username, string password)
         {
-            //TESTING START
-
-            //var salt = _crypto.GenerateSalt();
-            //var hash = _crypto.Hash(password + salt);
-
-            //var newUser = new User()
-            //{
-            //    Username = username,
-            //    Password = hash,
-            //    Salt = salt,
-            //    PayDay = 15,
-            //    IsMonthly = false
-            //};
-
-            //_context.Users.Add(newUser);
-            //_context.SaveChanges();
-
-            //return true;
-
-            //TESTING END
-
             if (!_context.Users.Any(r => r.Username == username))
                 return false;
 
@@ -52,6 +33,10 @@ namespace BudgetApp.Services
 
             if (hash != user.Password)
                 return false;
+
+            // Logged in
+
+            _creds.PopulateService(user);
 
             return true;
         }

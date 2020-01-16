@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Text;
+using Interfaces.Entities;
 
 namespace Database.Entities
 {
-    public class User
+    public class User : IUser
     {
         /*
          * 

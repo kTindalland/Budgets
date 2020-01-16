@@ -14,11 +14,13 @@ namespace BudgetApp.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ILoginService _login;
+        private readonly ICredentialHoldingService _creds;
 
-        public HomeController(ILogger<HomeController> logger, ILoginService login)
+        public HomeController(ILogger<HomeController> logger, ILoginService login, ICredentialHoldingService creds)
         {
             _login = login;
             _logger = logger;
+            _creds = creds;
         }
 
         public IActionResult Index()
@@ -41,6 +43,9 @@ namespace BudgetApp.Controllers
 
         public IActionResult MainPage()
         {
+            if (!_creds.LoggedIn)
+                return RedirectToAction("Index");
+
             return View();
         }
 

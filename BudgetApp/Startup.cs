@@ -12,6 +12,7 @@ using Interfaces.Services;
 using BudgetApp.Services;
 using Database;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Http;
 
 namespace BudgetApp
 {
@@ -34,6 +35,12 @@ namespace BudgetApp
 
             services.AddScoped<ILoginService, LoginService>();
             services.AddSingleton<ICryptographicService, CryptographicService>();
+            services.AddSingleton<ICredentialHoldingService, CredentialHoldingService>();
+
+            services.AddSession(options => options.IdleTimeout = TimeSpan.FromMinutes(5));
+
+            services.AddSingleton<IHttpContextAccessor, HttpContextAccessor>();
+            services.AddHttpContextAccessor();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -56,6 +63,7 @@ namespace BudgetApp
 
             app.UseAuthorization();
 
+            app.UseSession();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllerRoute(
