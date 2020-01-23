@@ -21,10 +21,23 @@ namespace BudgetApp.Services
             _creds = creds;
         }
 
-        public bool AuthenticateLogin(string username, string password)
+        public bool AuthenticateLogin(string username, string password, out string errormsg)
         {
-            if (!_context.Users.Any(r => r.Username == username))
+            try
+            {
+                if (!_context.Users.Any(r => r.Username == username))
+                {
+                    errormsg = "Username does not exist.";
+                    return false;
+                }
+                    
+            }
+            catch
+            {
+                errormsg = "Could not connect to database.";
                 return false;
+            }
+            
 
             var user = _context.Users.First(r => r.Username == username);
 
@@ -32,12 +45,17 @@ namespace BudgetApp.Services
             var hash = _crypto.Hash(saltedPassword);
 
             if (hash != user.Password)
+            {
+                errormsg = "Username or password incorrect.";
                 return false;
+            }
+                
 
             // Logged in
 
             _creds.PopulateService(user);
 
+            errormsg = "";
             return true;
         }
     }

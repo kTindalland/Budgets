@@ -1,7 +1,101 @@
-﻿
+﻿@model MainPageViewModel
 @{
-    ViewData["Title"] = "MainPage";
+    ViewData["Title"] = "Main Page";
+    Layout = "_SignedInLayout";
 }
 
-<h1>MainPage</h1>
+<h1 class="text-center">Overview</h1>
+<hr class="pb-2" />
 
+<div class="row">
+    <div class="col-sm-10">
+        <h3 class="text-left">Budgets</h3>
+    </div>
+    <div class="col-sm-2">
+        <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#DetailedBudgets" aria-expanded="false" aria-controls="DetailedBudgets">
+            Expand
+        </button>
+    </div>
+</div>
+<hr class="pb-2" />
+
+<div class="collapse" id="DetailedBudgets">
+    @if (Model.ActiveBudgets.Count != 0)
+    {
+        foreach (var budget in Model.ActiveBudgets)
+        {
+
+
+            var percentage = (budget.CurrentSpent / budget.BudgetedAmount) * 100;
+            var leftOver = percentage % 1;
+            percentage -= leftOver;
+
+            var barlength = percentage > 100 ? 100 : percentage;
+
+            string background;
+
+            if (barlength < 75)
+            {
+                background = "bg-success";
+            }
+            else if (barlength < 100)
+            {
+                background = "bg-warning";
+            }
+            else
+            {
+                background = "bg-danger";
+            }
+
+            var activeClass = budget.Active ? "text-success" : "text-muted";
+            var activeTag = budget.Active ? "Active" : "Inactive";
+
+            <div class="card p-4">
+                <h5 class="card-title">@budget.FriendlyName | <span class="@activeClass">@activeTag</span></h5>
+                <p class="card-text">£@budget.CurrentSpent / £@budget.BudgetedAmount</p>
+
+                <div class="progress">
+                    <div class="progress-bar @background" role="progressbar" style="width: @barlength%" aria-valuenow="25" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+
+
+
+
+        }
+    }
+    else
+    {
+        <p class="text-center text-muted">You have no active budgets. <a asp-controller="Home" asp-action="MainPage" asp-route-options="1">See all.</a></p>
+    }
+    <hr class="pb-2" />
+</div>
+
+<div class="row">
+<div class="col-sm-10">
+    <h3 class="text-left">Income</h3>
+</div>
+<div class="col-sm-2">
+    <button class="btn btn-primary" type="button" data-toggle="collapse" data-target="#DetailedSpends" aria-expanded="false" aria-controls="DetailedSpends">
+        Expand
+    </button>
+</div>
+</div>
+<hr class="pb-2" />
+
+<div class="collapse" id="DetailedSpends">
+    @if (Model.RecentIncomeRecords.Count != 0)
+    {
+        foreach (var income in Model.RecentIncomeRecords)
+        {
+            <div class="card p-2">
+                <h5 class="card-title"><span class="text-success">£££</span> @income.FriendlyName  | £@income.Amount</h5>
+            </div>
+        }
+    }
+    else
+    {
+        <p class="text-center text-muted">You have no recent income.</p>
+    }
+    <hr class="pb-2" />
+</div>

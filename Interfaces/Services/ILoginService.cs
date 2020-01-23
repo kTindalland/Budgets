@@ -6,6 +6,6 @@ namespace Interfaces.Services
 {
     public interface ILoginService
     {
-        bool AuthenticateLogin(string username, string password);
+        bool AuthenticateLogin(string username, string password, out string errormsg);
     }
 }
